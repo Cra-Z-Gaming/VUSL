@@ -1,1 +1,338 @@
+# VUSL Offline Launcher
 
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>VUSL</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #0f0f0f;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 42px;
+}
+
+#topBar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: #0f0f0f;
+  padding-bottom: 15px;
+}
+
+#progressContainer {
+  width: 100%;
+  height: 28px;
+  background: #1e1e1e;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background: limegreen;
+  transition: width 0.2s;
+}
+
+#status {
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+#search {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: #1d1d1d;
+  color: white;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+#games {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.gameBtn {
+  background: #1b1b1b;
+  border: 1px solid #2e2e2e;
+  border-radius: 12px;
+  color: white;
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: 0.15s;
+  min-height: 64px;
+}
+
+.gameBtn:hover {
+  background: #2a2a2a;
+  transform: scale(1.02);
+}
+
+.icon {
+  font-size: 22px;
+  width: 28px;
+  text-align: center;
+}
+
+.name {
+  flex: 1;
+  text-align: left;
+  font-size: 15px;
+}
+
+#toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: limegreen;
+  color: black;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-weight: bold;
+  display: none;
+  z-index: 9999;
+}
+</style>
+</head>
+<body>
+
+<div id="toast">All Games Loaded</div>
+
+<div id="topBar">
+  <h1>VUSL</h1>
+
+  <div id="progressContainer">
+    <div id="progressBar"></div>
+  </div>
+
+  <div id="status">Preparing games...</div>
+
+  <input id="search" type="text" placeholder="Search games...">
+</div>
+
+<div id="games"></div>
+
+<script>
+const games = [
+  ["1.5", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/1.5.html"],
+  ["1.8", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/1.8.html"],
+  ["12 Mini Battles", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/12minibattles.html"],
+  ["1 on 1 Tennis", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/1on1tennis.html"],
+  ["2048 Cupcakes", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/2048cupcakes.html"],
+  ["8 Ball Classic", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/8ballclassic.html"],
+  ["Age of War 2", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/ageofwar2.html"],
+  ["Among Us", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/amongus.html"],
+  ["Angry Birds", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/angrybirds.html"],
+  ["Awesome Tanks 2", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/awesometanks2.html"],
+  ["Backrooms", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/backrooms.html"],
+  ["Bad Ice Cream", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/badicecream.html"],
+  ["Bad Piggies", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/badpiggies.html"],
+  ["Baseball Bros", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/baseballbros.html"],
+  ["Basket Random", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/basketrandom.html"],
+  ["Bloons TD", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/bloonsTD.html"],
+  ["Bloons TD 2", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/bloonsTD2.html"],
+  ["Bloons TD 5", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/bloonsTD5.html"],
+  ["Bob The Robber", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/bobtherobber.html"],
+  ["Candy Crush", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/candycrush.html"],
+  ["Capybara Clicker", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/capybaraclicker.html"],
+  ["Chess", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/chess.html"],
+  ["Cookie Clicker", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/cookieclicker.htm"],
+  ["Crazy Cars", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/crazycars.html"],
+  ["Dadish 2", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/dadish2.html"],
+  ["Dadish 3", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/dadish3.html"],
+  ["Duck Life 4", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/ducklife4.html"],
+  ["Eagleride", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/eagleride.html"],
+  ["Earn To Die 2", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/earntodie2.html"],
+  ["Eggy Car", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/eggycar.html"],
+  ["Fancy Pants Adventure", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/fancypantsadventure.html"],
+  ["Football Legends", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/footballlegends.html"],
+  ["Free Rider 3", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/freerider3.html"],
+  ["Fruit Ninja", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/fruitninja.html"],
+  ["Geometry Dash", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/geometrydash.html"],
+  ["House of Hazards", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/houseofhazards.html"],
+  ["Idle Breakout", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/idlebreakout.html"],
+  ["Johnny Trigger", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/johnnytrigger.html"],
+  ["Learn To Fly", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/learntofly.html"],
+  ["Moto X3M", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/motox3m.htm"],
+  ["Moto X3M Winter", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/motox3mwinter.html"],
+  ["OVO", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/ovo.html"],
+  ["Papa's Bakeria", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/papasbakeria.html"],
+  ["Papa's Burgeria", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/papasburgeria.html"],
+  ["Papa's Freezeria", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/papasfreezeria.html"],
+  ["PolyTrack", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/polytrack.html"],
+  ["Retro Bowl", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/retrobowl.html"],
+  ["Retro Bowl College", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/retrobowlcollege.html"],
+  ["Riddle School", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/riddleschool.html"],
+  ["Roof Top Snipers 2", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/rooftopsnipers2.html"],
+  ["Run 2", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/run2.html"],
+  ["Slope", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/slope.html"],
+  ["SM64", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/sm64.html"],
+  ["Snowball.io", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/snowballio.html"],
+  ["Space Waves", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/spacewaves.html"],
+  ["Speed Stars", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/speedstars.html"],
+  ["Sprunki", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/sprunki.html"],
+  ["State.io", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/stateio.html"],
+  ["Stick Merge", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/stickmerge.html"],
+  ["Super Liquid Soccer", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/superliquidsoccer.html"],
+  ["Territorial.io", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/territorialio.html"],
+  ["The Impossible Quiz", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/theimpossiblequiz.html"],
+  ["Time Shooter 2", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/timeshooter2.html"],
+  ["Tiny Fishing", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/tinyfishing.html"],
+  ["Wheely", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/wheely.html"],
+  ["World's Hardest Game 2", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/worldshardestgame2.html"],
+  ["Wrestle Bros", "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/HTML_Games/wrestlebros.html"]
+];
+
+const container = document.getElementById("games");
+const progressBar = document.getElementById("progressBar");
+const progressContainer = document.getElementById("progressContainer");
+const statusText = document.getElementById("status");
+const toast = document.getElementById("toast");
+const search = document.getElementById("search");
+
+let downloaded = 0;
+
+function createButtons() {
+  games.forEach(([name, url], index) => {
+    const btn = document.createElement("button");
+    btn.className = "gameBtn";
+    btn.dataset.name = name.toLowerCase();
+
+    btn.innerHTML = `
+      <div class="icon" id="icon-${index}">⏳</div>
+      <div class="name">${name}</div>
+    `;
+
+    btn.onclick = async () => {
+      let html = localStorage.getItem(url);
+
+      if (!html) {
+        try {
+          const res = await fetch(url);
+          html = await res.text();
+          localStorage.setItem(url, html);
+
+          document.getElementById(`icon-${index}`).innerText = "✅";
+        } catch {
+          alert("Failed to load game");
+          return;
+        }
+      }
+
+      const win = window.open("about:blank");
+
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    };
+
+    container.appendChild(btn);
+  });
+}
+
+async function preloadGames() {
+  for (let i = 0; i < games.length; i++) {
+    const [name, url] = games[i];
+
+    try {
+      let html = localStorage.getItem(url);
+
+      if (!html) {
+        const res = await fetch(url);
+        html = await res.text();
+        localStorage.setItem(url, html);
+      }
+
+      document.getElementById(`icon-${i}`).innerText = "✅";
+    } catch {
+      document.getElementById(`icon-${i}`).innerText = "❌";
+    }
+
+    downloaded++;
+
+    const percent = Math.floor((downloaded / games.length) * 100);
+
+    progressBar.style.width = percent + "%";
+
+    statusText.innerText = `Loading Games... ${downloaded}/${games.length}`;
+
+    await new Promise(r => setTimeout(r, 35));
+  }
+
+  progressContainer.style.display = "none";
+  statusText.innerText = "All Games Loaded";
+
+  toast.style.display = "block";
+
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 4000);
+}
+
+search.addEventListener("input", () => {
+  const value = search.value.toLowerCase();
+
+  document.querySelectorAll(".gameBtn").forEach(btn => {
+    btn.style.display = btn.dataset.name.includes(value)
+      ? "flex"
+      : "none";
+  });
+});
+
+createButtons();
+preloadGames();
+</script>
+
+</body>
+</html>
+```
+
+## Notes
+
+* Put this inside your `index.html`
+* Add more games by copying one line in the `games` array
+* Uses localStorage for offline cache
+* Loads buttons instantly
+* Downloads games in background
+* Green check = downloaded
+* Progress bar disappears when complete
+* Notification appears for 4 seconds when all games are loaded
+* Games launch in `about:blank`
+* Works best on desktop Chromium browsers
+
+## Important
+
+If localStorage eventually fills up because of huge games:
+
+Replace:
+
+```js
+localStorage.setItem(url, html);
+```
+
+with IndexedDB later.
+
+But for now this is MUCH simpler and should work fine for most games.
