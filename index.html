@@ -309,30 +309,3 @@ preloadGames();
 </body>
 </html>
 ```
-
-## Notes
-
-* Put this inside your `index.html`
-* Add more games by copying one line in the `games` array
-* Uses localStorage for offline cache
-* Loads buttons instantly
-* Downloads games in background
-* Green check = downloaded
-* Progress bar disappears when complete
-* Notification appears for 4 seconds when all games are loaded
-* Games launch in `about:blank`
-* Works best on desktop Chromium browsers
-
-## Important
-
-If localStorage eventually fills up because of huge games:
-
-Replace:
-
-```js
-localStorage.setItem(url, html);
-```
-
-with IndexedDB later.
-
-But for now this is MUCH simpler and should work fine for most games.
