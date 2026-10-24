@@ -571,6 +571,12 @@
             transform: translateY(-2px);
         }
 
+        .clear-bet:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* Animations */
         @keyframes breathe {
             0% { box-shadow: 0 0 5px rgba(255, 255, 0, 0.3); }
@@ -1629,6 +1635,7 @@
         // Update control button states
         function updateControls() {
             const playerValue = calculateHandValue(state.playerHand);
+            clearBetButton.disabled = state.gameInProgress || state.bet === 0;
             
             if (state.gameInProgress && !state.dealersTurn && !state.handOver) {
                 hitButton.disabled = false;
