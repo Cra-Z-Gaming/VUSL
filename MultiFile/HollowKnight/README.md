@@ -4,7 +4,13 @@ A web-based implementation of Hollow Knight built with vanilla JavaScript, HTML5
 
 **Project Initiated: 2022** | **Created WITHOUT the use of any Artificial Intelligence**
 
+XX-READ-XX 
+This Repack of the game DID use AI to recontruct the index to fetch the game code (opposed to letting github put it together automaticly) 
+all assets are still the same as the original files from (https://github.com/TinTinWinata/hollow-knight-js)
+please direct all stars to him because he didnt use ai like i do.
+
 ![Hollow Knight Game Screenshot](image.png)
+
 
 ## 🎮 Game Overview
 
