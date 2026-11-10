@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hollow Knight</title>
+<style>html,body{margin:0;background:#000}</style>
+</head>
+<body>
+<script>
+// Loader only: no design here. The real pages are fetched from raw GitHub and written in.
+// Assets (js/css/images) come through jsDelivr because raw GitHub serves them as text/plain.
+var BASE = "https://raw.githubusercontent.com/Cra-Z-Gaming/VUSL/refs/heads/main/MultiFile/";
+var ASSET_BASE = "https://cdn.jsdelivr.net/gh/Cra-Z-Gaming/VUSL@main/MultiFile/";
+var START = "landing.html";                        // what index.html shows (the original landing page)
+var ALIAS = { "index.html": "landing.html" };      // links to index.html go to the landing page
+
+function boot() {
+  function bust(u) { return u + (u.indexOf("?") > -1 ? "&" : "?") + "v=" + Date.now(); }
+  function load(file) {
+    file = ALIAS[file] || file;
+    fetch(bust(BASE + file), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw 0; return r.text(); })
+      .then(function (html) {
+        html = html.replace(/<base\b[^>]*>/gi, "");
+        html = html.replace(/(\b(?:src|href)=["'])\/(?!\/)/gi, "$1");   // "/js/x.js" -> "js/x.js"
+        var inject = '<base href="' + ASSET_BASE + '"><script>var BASE=' + JSON.stringify(BASE) +
+          ',ASSET_BASE=' + JSON.stringify(ASSET_BASE) + ',START=' + JSON.stringify(START) +
+          ',ALIAS=' + JSON.stringify(ALIAS) + ';(' + boot.toString() + ')(true);<\/script>';
+        html = /<head[^>]*>/i.test(html) ? html.replace(/<head[^>]*>/i, function (m) { return m + inject; }) : inject + html;
+        document.open(); document.write(html); document.close();
+      })
+      .catch(function () { document.body.innerHTML = '<p style="color:#fff;font:16px sans-serif;padding:24px">Failed to load ' + file + '</p>'; });
+  }
+  // Links between the project's pages (index/game/auth .html) go through the same fetch method
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a[href]");
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || a.target === "_blank") return;
+    if (a.href.indexOf(ASSET_BASE) !== 0) return;
+    var m = a.href.slice(ASSET_BASE.length).split(/[?#]/)[0];
+    if (/^[\w.-]+\.html$/.test(m)) { e.preventDefault(); load(m); }
+  }, true);
+  if (!arguments[0]) load(START);
+}
+boot();
+</script>
+</body>
+</html>
